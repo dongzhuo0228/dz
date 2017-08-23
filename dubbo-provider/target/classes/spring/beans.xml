@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+		
+	<!-- 配置自动扫描的包  扫描dao ,service-->
+	<context:component-scan base-package="dz.aaa.ssm">
+			<context:exclude-filter type="annotation"
+			expression="org.springframework.web.bind.annotation.RestController" />
+			<!-- 不扫描controller包 -->
+	</context:component-scan>
+	
+<!-- 	<context:property-placeholder location="classpath:db.properties"/>  -->
+	
+	 <!-- <context:property-placeholder location="classpath:quartz.properties"  ignore-unresolvable="true"/> -->
+	<!-- 1. 数据源 : DriverManagerDataSource -->
+	<!-- <bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/test?characterEncoding=utf-8"/>
+		<property name="username" value="root"/>
+		<property name="password" value="admin"/>
+	</bean> -->
+	<bean id="datasource" class="com.alibaba.druid.pool.DruidDataSource"
+		  init-method="init" destroy-method="close">
+		<property name="url" value="jdbc:mysql://localhost:3306/test?characterEncoding=utf-8" />
+		<property name="username" value="root" />
+		<property name="password" value="admin" />
+		<property name="maxActive" value="10" />
+		<property name="maxWait" value="6000" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="180" />
+		<property name="filters" value="stat" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+				  value="20" />
+	</bean>
+	
+	
+	<!-- 
+		2. mybatis的SqlSession的工厂: SqlSessionFactoryBean 
+			dataSource / typeAliasesPackage
+	-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="datasource"/>
+		<property name="typeAliasesPackage" value="dz.aaa.ssm.po"/>
+		<property name="configLocation" value="classpath:mybaits/SqlMapConfig.xml" />
+		
+		<!-- 实体类对应的包名称  给类名起个别名  这样在写的sql parameterType="User"-->
+	</bean>
+		
+	<!-- 
+		3. mybatis自动扫描加载Sql映射文件 : MapperScannerConfigurer 
+			sqlSessionFactory / basePackage
+	-->
+	 <bean id="config" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	 <!-- 自动加载mapper文件 多包扫描，半角，隔开 -->
+		<property name="basePackage" value="dz.aaa.ssm.mapper"/> 
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean> 
+	
+	<!-- 4. 事务管理 : DataSourceTransactionManager -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="datasource"/>
+	</bean>
+
+	<!-- 5. 使用声明式事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	
+	
+	<!-- 集成redis -->
+	<!-- <import resource="redis-context.xml"/> -->
+	<!-- <import resource="spring-jms.xml"/> -->
+	
+	 <!--集成quartz  -->
+<!-- 	 <import resource="quartz-config.xml"/>  -->
+	<!-- <import resource="dubbo-provider.xml"/> -->
+	
+</beans>

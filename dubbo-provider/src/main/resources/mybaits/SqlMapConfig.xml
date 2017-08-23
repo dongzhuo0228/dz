@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 包扫描的方式起别名 -->
+	<typeAliases>
+		<package name="dz.aaa.ssm.po" />
+		<!-- 如果扫描另外一个po  在写一个package -->
+	</typeAliases>
+<!-- 	<mappers></mappers>  在spring里面配置，这里就不需要配置了-->
+  <!--   <plugins>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            设置数据库类型 Oracle,Mysql,MariaDB,SQLite,Hsqldb,PostgreSQL六种数据库        
+            <property name="dialect" value="mysql"/>
+        </plugin>
+    </plugins> -->
+
+	
+</configuration>
